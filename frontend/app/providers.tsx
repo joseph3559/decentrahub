@@ -25,7 +25,7 @@ const lensChain = { // THIS IS AN EXAMPLE - REPLACE WITH ACTUAL LENS CHAIN CONFI
 };
 
 
-const config = createConfig(
+export const config = createConfig(
   getDefaultConfig({
     // Required API Keys
     alchemyId: process.env.NEXT_PUBLIC_ALCHEMY_ID, // Get from Alchemy Dashboard
