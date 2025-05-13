@@ -1,4 +1,4 @@
-// frontend/src/app/components/Navbar.tsx
+// frontend/app/components/Navbar.tsx
 'use client';
 
 import Link from 'next/link';

@@ -3,6 +3,7 @@
 import { Providers } from "./providers";
 import "./styles/globals.css";
 import { useEffect, useState } from "react";
+import Navbar from "./components/Navbar";
 
 export default function RootLayout({
   children,
@@ -20,6 +21,7 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         {mounted ? (
           <Providers>
+            <Navbar />
             {children}
           </Providers>
         ) : null}

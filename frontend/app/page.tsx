@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ConnectKitButton, useModal } from 'connectkit'; // For wallet connection
+import { ConnectKitButton } from 'connectkit'; // Remove useModal
 // Assuming you have openConnectModal here
 
 // Icons - Import specific icons as needed
@@ -45,8 +45,6 @@ const LottiePlaceholder = ({ className }: { className?: string }) => (
 
 // --- Hero Section ---
 const HeroSection = () => {
-  const { openConnectModal } = useWallet(); // Or use useModal from ConnectKit
-
   return (
     <section className="relative bg-gradient-to-br from-slate-900 via-purple-900 to-slate-800 text-white min-h-[80vh] md:min-h-screen flex items-center justify-center overflow-hidden py-20">
       {/* Optional: Parallax background image here */}
@@ -84,12 +82,16 @@ const HeroSection = () => {
           >
             Explore Marketplace
           </Link>
-          <button
-             onClick={openConnectModal} // Use function from useWallet or useModal
-            className="px-8 py-3 bg-transparent border-2 border-purple-400 hover:bg-purple-500/20 text-purple-300 hover:text-white font-semibold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105 text-lg"
-          >
-            Connect Wallet
-          </button>
+          <ConnectKitButton.Custom>
+            {({ show }) => (
+              <button
+                onClick={show}
+                className="px-8 py-3 bg-transparent border-2 border-purple-400 hover:bg-purple-500/20 text-purple-300 hover:text-white font-semibold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105 text-lg"
+              >
+                Connect Wallet
+              </button>
+            )}
+          </ConnectKitButton.Custom>
         </motion.div>
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
@@ -341,8 +343,6 @@ const TechnologyStackSection = () => (
 
 // --- Call to Action Section ---
 const CallToActionSection = () => {
-  const { openConnectModal } = useWallet(); // Or use useModal from ConnectKit
-
   return (
     <section className="relative py-20 md:py-32 bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 text-white overflow-hidden">
       <div className="absolute inset-0 pattern-dots opacity-10"></div> {/* Example pattern */}
@@ -362,7 +362,6 @@ const CallToActionSection = () => {
           Ready to take control of your digital content? Connect your wallet and start minting, sharing, and earning.
         </motion.p>
         <motion.button
-          onClick={openConnectModal}
           initial={{ scale: 0.9 }}
           whileInView={{ scale: 1 }}
           whileHover={{ scale: 1.05, boxShadow: "0px 0px 20px rgba(255,255,255,0.5)" }}

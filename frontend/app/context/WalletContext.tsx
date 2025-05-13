@@ -19,8 +19,8 @@ import {
 } from 'wagmi';
 import { fetchBalance } from '@wagmi/core';
 import { config as wagmiConfig } from '../providers';
-import { ConnectKitButton } from 'connectkit';
 import { Chain } from 'wagmi/chains';
+import { ConnectKitButton } from 'connectkit';
 
 interface WalletBalance {
   value: bigint;
@@ -36,7 +36,6 @@ interface WalletContextType {
   isReconnecting: boolean;
   isDisconnected: boolean;
   status: 'connected' | 'connecting' | 'reconnecting' | 'disconnected';
-  openConnectModal?: () => void;
   disconnect: () => void;
   ensName?: string | null;
   chain?: Chain;
@@ -68,10 +67,6 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const configuredChains = useWagmiChains();
   const currentChainId = useChainId();
   const [currentChain, setCurrentChain] = useState<Chain | undefined>(undefined);
-
-  const openConnectModal = () => {
-    console.error('ConnectKitButton.show() is not available. Use ConnectKitButton.Custom instead.');
-  };
 
   const [nativeBalance, setNativeBalance] = useState<WalletBalance | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -157,7 +152,6 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         isReconnecting,
         isDisconnected,
         status,
-        openConnectModal,
         disconnect: handleDisconnect,
         ensName: ensNameData,
         chain: currentChain,
@@ -183,4 +177,3 @@ export const useWallet = () => {
   }
   return context;
 };
-""
