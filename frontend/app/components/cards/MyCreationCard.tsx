@@ -1,11 +1,11 @@
 // /home/scott/Desktop/Office/decentrahub/frontend/app/components/cards/MyCreationCard.tsx
 'use client';
 
-import Image from 'next/image';
+import Image, { type StaticImageData } from 'next/image';
 import { motion } from 'framer-motion';
-import { Edit3, Trash2, Eye, BarChart2, Tag } from 'lucide-react'; // Icons for actions
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
+import { Button } from '../../components/ui/button';
+import { Badge } from '../../components/ui/badge';
+import { Edit3, Trash2, Eye, BarChart2, Tag } from 'lucide-react';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 
 export type NftStatus = 'Listed' | 'Not Listed' | 'Auction' | 'Sold';
@@ -13,17 +13,17 @@ export type NftCategory = 'Article' | 'Music' | 'Video' | 'Art';
 
 export interface MyCreation {
   imageUrl: string | StaticImport;
-  bidAmount: number | undefined;
-  creatorName: any;
-  lastBid: boolean;
+  bidAmount?: number;
+  creatorName?: string;
+  lastBid?: boolean;
   id: string;
   title: string;
-  thumbnailUrl: string;
+  thumbnailUrl: string | StaticImageData;
   category: NftCategory;
-  mintedDate: string; // Or Date object
+  mintedDate: string;
   status: NftStatus;
-  price?: number; // Optional, if listed
-  currency?: string; // e.g., 'ETH', 'GHO'
+  price?: number;
+  currency?: string;
   views?: number;
   sales?: number;
 }
@@ -31,7 +31,7 @@ export interface MyCreation {
 interface MyCreationCardProps {
   creation: MyCreation;
   onEdit: (id: string) => void;
-  onDelete: (id: string) => void; // This would likely be a soft delete or unlisting
+  onDelete: (id: string) => void;
   onViewAnalytics?: (id: string) => void;
 }
 
@@ -122,7 +122,7 @@ export const MyCreationCard = ({ creation, onEdit, onDelete, onViewAnalytics }: 
             onClick={() => onDelete(creation.id)}
             variant="destructive"
             size="sm"
-            className="flex-1" // Or use a less prominent style for "delete"
+            className="flex-1"
           >
             <Trash2 className="mr-2 h-4 w-4" /> Delete
           </Button>

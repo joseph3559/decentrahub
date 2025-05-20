@@ -9,29 +9,22 @@ import {
   useEffect,
   useCallback,
 } from 'react';
-import { useWallet as useWagmiWalletHook } from './WalletContext'; // Your existing WalletContext hook
-import { RoleSelectionModal } from '../components/auth/RoleSelectionModal'; // Import the modal
+import { useWallet as useWagmiWalletHook } from './WalletContext';
+import { RoleSelectionModal } from '../components/auth/RoleSelectionModal';
 import { toast } from "sonner";
 
-// Correctly import types from your shared types file
 import {
     type BackendUser,
     type BackendLensProfile,
     type VerifyWalletResponse,
     type VerifyWalletPayload
-} from '../../../shared/types'; // Ensure this path is correct for your project structure
+} from '../../../shared/types';
 
-// Import the service function
-import { verifyWalletWithBackend } from '../services/auth.service'; // Ensure auth.service.ts exports this
+import { verifyWalletWithBackend } from '../services/auth.service';
 
 
-// UserRoleType from your backend User.model.ts (or shared types)
 export type UserRole = 'creator' | 'consumer' | null;
 
-// AuthenticatedUser now correctly extends BackendUser.
-// It will inherit all properties from BackendUser (like userId, avatarUrl, etc.)
-// No need to redeclare or add extra properties here unless they are truly distinct
-// and not part of the BackendUser structure.
 export interface AuthenticatedUser extends BackendUser {
   [x: string]: any;
 }
@@ -39,8 +32,8 @@ export interface AuthenticatedUser extends BackendUser {
 interface AuthContextType {
   isAuthenticated: boolean;
   currentUser: AuthenticatedUser | null;
-  userRole: UserRole; // Still useful for quick checks
-  lensProfileData: BackendLensProfile | null; // Stores the Lens-specific part of the profile
+  userRole: UserRole;
+  lensProfileData: BackendLensProfile | null;
   isLoadingAuth: boolean;
   address: `0x${string}` | undefined;
   logout: () => void;
@@ -67,17 +60,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoadingAuth(false);
     setShowRoleModal(false);
     console.log('AuthContext: Auth state reset.');
-    // localStorage.removeItem('decentrahub_user_session');
   }, []);
 
   const processBackendAuthResponse = (data: VerifyWalletResponse) => {
-    // data.user is of type BackendUser. Since AuthenticatedUser extends BackendUser
-    // and doesn't add new *required* fields, this assignment is valid.
     setCurrentUser(data.user);
     setUserRole(data.user.role);
     setLensProfileData(data.lensProfile);
     setIsAuthenticated(true);
-    // localStorage.setItem('decentrahub_user_session', JSON.stringify({ user: data.user, lensProfile: data.lensProfile }));
     toast.success(data.message || "Successfully authenticated!", {
         description: `Welcome, ${data.user.fullName || data.user.address} (${data.user.role})`
     });
@@ -95,13 +84,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     setIsLoadingAuth(true);
     try {
-      // Construct the payload according to VerifyWalletPayload
       const payload: VerifyWalletPayload = {
         walletAddress,
         role: selectedRole,
         fullName: additionalInfo.fullName,
         email: additionalInfo.email,
-        // avatarUrl, website, twitterHandle could be added here if collected in modal
       };
       const backendResponse = await verifyWalletWithBackend(payload);
       processBackendAuthResponse(backendResponse);
