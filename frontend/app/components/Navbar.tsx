@@ -45,10 +45,6 @@ const Navbar = () => {
   // Ensure component is mounted before using theme stuff to avoid hydration mismatch
   useEffect(() => setMounted(true), []);
 
-  const shortenAddress = (addr: string | undefined) => {
-    if (!addr) return '';
-    return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
-  };
 
   if (!mounted) return null; // Or a loading skeleton for Navbar
 

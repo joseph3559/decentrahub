@@ -68,8 +68,8 @@ const mockUserStats: UserStats = {
 };
 
 export default function ConsumerDashboardPage() {
-  const { lensProfile, address, userRole } = useAuth(); // Get user info if needed for personalization
-  const [userStats, setUserStats] = useState<UserStats>(mockUserStats);
+  const { lensProfile , address } = useAuth(); // Get user info if needed for personalization
+  const [userStats] = useState<UserStats>(mockUserStats);
 
   // TODO: Fetch actual user stats when the component mounts or user data changes
   // useEffect(() => {

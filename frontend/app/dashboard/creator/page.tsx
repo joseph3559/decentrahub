@@ -3,8 +3,8 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';// ShadCN Button
-import { ArrowRight, PlusCircle, BarChart3, ListMusic, Settings, Palette, FileText, Video } from 'lucide-react'; // Added more specific icons
-import { useState, useEffect } from 'react';
+import { ArrowRight, PlusCircle, BarChart3, Settings, Palette } from 'lucide-react'; // Added more specific icons
+import { useState } from 'react';
 import { Button } from '../../components/ui/button';
 import { useAuth } from '../../context/AuthContext';
 

@@ -26,7 +26,7 @@ type ContentType = 'Article' | 'Music' | 'Video' | 'Art';
 
 export default function MintContentPage() {
   const [activeTab, setActiveTab] = useState<ContentType>('Article');
-  const { mintWithBonsai, isMinting, mintError, mintSuccessData } = useBonsaiMint();
+  const { mintWithBonsai, isMinting, mintSuccessData } = useBonsaiMint();
   const { address: creatorAddress } = useAuth();
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [currentMintedItemTitle, setCurrentMintedItemTitle] = useState("");
@@ -89,7 +89,7 @@ export default function MintContentPage() {
   const handleCopyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
       .then(() => toast.success("Copied to clipboard!"))
-      .catch(err => toast.error("Failed to copy."));
+      .catch(() => toast.error("Failed to copy."));
   };
 
   const resetMintStatusAndForm = () => {

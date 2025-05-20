@@ -1,12 +1,11 @@
 // /home/scott/Desktop/Office/decentrahub/frontend/app/components/cards/DashboardNftCard.tsx (Suggested path)
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image'; // Using Next/Image for optimization
 import { motion } from 'framer-motion';
 import { Button } from '../ui/button'; // Assuming ShadCN Button
 import { Eye, Repeat, Tag, XCircle } from 'lucide-react'; // Example icons
-import { NftItem } from '../../dashboard/consumer/MyMarketplace';
+import { NftItem } from '../../../dashboard/consumer/MyMarketplace';
 
 // Define specific actions based on tab
 type NftCardAction = 'view' | 'sell' | 'transfer' | 'update_listing' | 'cancel_listing' | 'update_bid' | 'cancel_bid' | 'unfavorite';
