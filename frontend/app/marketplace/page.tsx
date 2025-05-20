@@ -326,21 +326,19 @@ export default function MarketplacePage() {
     }
 
     // Sorting
-    // TODO: Implement all sorting options
     switch (sortBy) {
-      case 'latest':
-        // items = items.sort((a, b) => b.id.localeCompare(a.id)); // Assuming higher ID is newer
-        break;
       case 'priceLowToHigh':
         items = items.sort((a, b) => a.price - b.price);
         break;
       case 'priceHighToLow':
-         items = items.sort((a, b) => b.price - a.price);
+        items = items.sort((a, b) => b.price - a.price);
         break;
-      // Add other sort cases
+      case 'latest':
+      default:
+        break;
     }
     return items;
-  }, [mockNfts, selectedCategory, sortBy, searchTerm]);
+  }, [selectedCategory, sortBy, searchTerm]);
 
   const totalPages = Math.ceil(filteredAndSortedNfts.length / itemsPerPage);
   const currentDisplayNfts = filteredAndSortedNfts.slice(

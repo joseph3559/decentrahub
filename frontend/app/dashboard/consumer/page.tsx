@@ -75,7 +75,7 @@ const mockUserStats: UserStats = {
 export default function ConsumerDashboardPage() {
   // Corrected destructuring: use currentUser and lensProfileData
   const { currentUser, lensProfileData, address, userRole } = useAuth();
-  const [userStats, setUserStats] = useState<UserStats>(mockUserStats); // Changed from const to let/useState for potential updates
+  const [userStats] = useState<UserStats>(mockUserStats);
 
   // TODO: Fetch actual user stats when the component mounts or user data changes
   useEffect(() => {
@@ -119,7 +119,7 @@ export default function ConsumerDashboardPage() {
           Welcome back, <span className="text-[#e94560]">{userName}</span>!
         </h1>
         <p className="text-md text-[#a1a1aa] font-opensans mt-2">
-          Here's an overview of your activity on DecentraHub.
+          Here&apos;s an overview of your activity on DecentraHub.
         </p>
       </motion.div>
 

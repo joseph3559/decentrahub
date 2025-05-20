@@ -83,7 +83,7 @@ export default function MyCreationsPage() {
   const [filterCategory, setFilterCategory] = useState<NftCategory | 'All'>('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('dateDesc');
-  const [pageStats, setPageStats] = useState<CreatorPageStats>(mockPageStats);
+  const [pageStats] = useState<CreatorPageStats>(mockPageStats);
 
   // TODO: Implement actual data fetching for creator's NFTs
   useEffect(() => {

@@ -22,22 +22,42 @@ import {
 
 import { verifyWalletWithBackend } from '../services/auth.service';
 
-
 export type UserRole = 'creator' | 'consumer' | null;
 
-export interface AuthenticatedUser extends BackendUser {
-  [x: string]: any;
+// Define proper error type for authentication errors
+interface AuthError extends Error {
+    message: string;
+    code?: string;
+    status?: number;
+}
+
+// Updated AuthenticatedUser interface to exactly match BackendUser
+export interface AuthenticatedUser {
+    userId: string;
+    address: string;
+    role: 'creator' | 'consumer';
+    fullName?: string | null;  // Made optional with ?
+    bio?: string | null;
+    email?: string | null;
+    avatarUrl?: string | null;
+    website?: string | null;
+    twitterHandle?: string | null;
+    lensProfileId?: string | null;
+    lensHandle?: string | null;
+    isNewUser: boolean;
+    createdAt: string;
+    updatedAt: string;
 }
 
 interface AuthContextType {
-  isAuthenticated: boolean;
-  currentUser: AuthenticatedUser | null;
-  userRole: UserRole;
-  lensProfileData: BackendLensProfile | null;
-  isLoadingAuth: boolean;
-  address: `0x${string}` | undefined;
-  logout: () => void;
-  triggerAuthFlow: () => void;
+    isAuthenticated: boolean;
+    currentUser: AuthenticatedUser | null;
+    userRole: UserRole;
+    lensProfileData: BackendLensProfile | null;
+    isLoadingAuth: boolean;
+    address: `0x${string}` | undefined;
+    logout: () => void;
+    triggerAuthFlow: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -92,9 +112,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       };
       const backendResponse = await verifyWalletWithBackend(payload);
       processBackendAuthResponse(backendResponse);
-    } catch (error: any) {
+    } catch (error) {
       console.error('AuthContext: Error verifying wallet with backend:', error);
-      toast.error("Authentication Failed", { description: error.message || "Could not connect to the server." });
+      const authError = error as AuthError;
+      toast.error("Authentication Failed", {
+        description: authError.message || "Could not connect to the server."
+      });
       resetAuthState();
     } finally {
       setIsLoadingAuth(false);

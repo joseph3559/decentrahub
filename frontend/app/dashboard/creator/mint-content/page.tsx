@@ -179,7 +179,7 @@ export default function MintContentPage() {
               Minting Successful!
             </DialogTitle>
             <DialogDescription className="text-center text-[#a1a1aa] pt-2 font-opensans text-base">
-              Your content <strong className="text-purple-400">"{currentMintedItemTitle}"</strong> has been successfully minted as an NFT.
+              Your content <strong className="text-purple-400">&ldquo;{currentMintedItemTitle}&rdquo;</strong> has been successfully minted as an NFT.
             </DialogDescription>
           </DialogHeader>
 

@@ -72,9 +72,8 @@ export default function CreatorDashboardPage() {
   const [creatorStats, setCreatorStats] = useState<CreatorStats>(mockCreatorStats);
 
   useEffect(() => {
-    if (address && currentUser) { // Check if currentUser is available
-
-      const followers = lensProfileData?.stats?.totalFollowers || currentUser?.lensProfileData?.stats?.totalFollowers || 0; // Example access
+    if (address && currentUser) {
+      const followers = lensProfileData?.stats?.totalFollowers || 0;
       setCreatorStats(prevStats => ({
         ...prevStats,
         followersCount: followers,

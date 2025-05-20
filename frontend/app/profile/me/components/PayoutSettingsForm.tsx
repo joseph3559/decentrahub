@@ -29,7 +29,7 @@ export const PayoutSettingsForm = ({ isEditMode }: PayoutSettingsFormProps) => {
       <div>
         <Label htmlFor="walletAddress" className="text-slate-300">Receiving Wallet Address (e.g., for GHO)</Label>
         <Input id="walletAddress" defaultValue="0x123...abc (from connected wallet)" disabled className="mt-1 bg-[#1a1a2e] border-[#0f3460]" />
-        <p className="text-xs text-slate-500 mt-1">This is your primary wallet for receiving earnings. It's usually your connected wallet.</p>
+        <p className="text-xs text-slate-500 mt-1">This is your primary wallet for receiving earnings. It&apos;s usually your connected wallet.</p>
       </div>
 
       <div className="border-t border-[#0f3460] pt-6">

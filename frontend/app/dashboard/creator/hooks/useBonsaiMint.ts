@@ -29,8 +29,16 @@ interface BackendMintSuccessResponse {
 
 // Structure for the error response from the backend
 interface BackendErrorResponse {
-    message: string;
-    error?: string; // Optional detailed error message
+  message: string;
+  error?: string; // Optional detailed error message
+}
+
+// Define a proper error type for minting errors
+interface MintError extends Error {
+  message: string;
+  code?: string;
+  status?: number;
+  response?: BackendErrorResponse;
 }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5001/api/v1';
@@ -76,9 +84,10 @@ export const useBonsaiMint = () => {
         nftId: successResponse.bonsaiTransaction.nftId,
       };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error calling mint API or processing response:', error);
-      const errorMessage = error.message || 'An unknown error occurred during minting.';
+      const mintError = error as MintError;
+      const errorMessage = mintError.message || 'An unknown error occurred during minting.';
       setMintError(errorMessage);
       return { success: false, error: errorMessage };
     } finally {

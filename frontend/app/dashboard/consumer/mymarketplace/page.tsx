@@ -92,7 +92,7 @@ export default function MyMarketplacePage() {
     }
     // Add sorting logic based on sortBy
     return currentAssets;
-  }, [assets, filterType, searchTerm, sortBy]);
+  }, [assets, filterType, searchTerm]);
 
   const handleAction = (action: string, assetId: string) => {
     toast.info(`Action: ${action} on asset: ${assetId}. (Implement actual logic)`);

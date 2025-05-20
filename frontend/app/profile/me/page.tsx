@@ -22,7 +22,7 @@ import { updateUserProfile } from '../../services/user.service';
 
 export default function CreatorSettingsPage() {
   // currentUser from AuthContext is the source of truth for displayed data
-  const { currentUser, address, isLoadingAuth: isLoadingAuthContext } = useAuth();
+  const { currentUser, address, isLoadingAuth: isLoadingAuthContext, lensProfileData } = useAuth();
   const [isEditMode, setIsEditMode] = useState(false);
 
   // profileData will be initialized from currentUser and used by the form
@@ -99,9 +99,10 @@ export default function CreatorSettingsPage() {
       });
       setIsEditMode(false);
       return true;
-    } catch (error: any) {
+    } catch (error: Error | unknown) {
       console.error("Failed to save profile:", error);
-      toast.error("Failed to update profile.", { description: error.message || "Please try again." });
+      const errorMessage = error instanceof Error ? error.message : "Please try again.";
+      toast.error("Failed to update profile.", { description: errorMessage });
       return false;
     } finally {
       setIsSavingProfile(false);

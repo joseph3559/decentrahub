@@ -277,7 +277,6 @@ const CreatorTestimonialsSection = () => (
       >
         Loved by Creators
       </motion.h2>
-      {/* TODO: Implement Swiper Carousel */}
       <div className="grid md:grid-cols-3 gap-8">
         {testimonials.map((testimonial, index) => (
           <motion.div
@@ -288,8 +287,17 @@ const CreatorTestimonialsSection = () => (
             transition={{ delay: index * 0.15, duration: 0.6 }}
             className="bg-slate-800/70 p-6 rounded-xl shadow-lg text-center"
           >
-            <img src={testimonial.image} alt={testimonial.name} className="w-20 h-20 rounded-full mx-auto mb-4 border-2 border-purple-400" />
-            <p className="text-slate-300 italic mb-4 leading-relaxed">"{testimonial.quote}"</p>
+            <div className="relative w-20 h-20 mx-auto mb-4">
+              <Image
+                src={testimonial.image}
+                alt={testimonial.name}
+                fill
+                className="rounded-full object-cover border-2 border-purple-400"
+              />
+            </div>
+            <p className="text-slate-300 italic mb-4 leading-relaxed">
+              &ldquo;{testimonial.quote}&rdquo;
+            </p>
             <h4 className="font-semibold text-lg text-white">{testimonial.name}</h4>
             <p className="text-sm text-purple-300">{testimonial.role}</p>
           </motion.div>
