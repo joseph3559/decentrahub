@@ -234,7 +234,13 @@ const MarketplaceShowcaseSection = () => (
             transition={{ delay: index * 0.1, duration: 0.6 }}
             className="bg-slate-700/50 rounded-lg overflow-hidden shadow-lg hover:shadow-purple-500/40 transition-all duration-300 group"
           >
-            <Image src={item.image} alt={item.title} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
+            <Image
+              src={item.image}
+              alt={item.title}
+              width={300}  // Add width
+              height={200} // Add height
+              className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+            />
             <div className="p-4">
               <h3 className="text-lg font-semibold mb-1 text-white">{item.title}</h3>
               <p className="text-xs text-purple-400 mb-2">By {item.creator} - {item.category}</p>
