@@ -3,118 +3,150 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-
-import { Separator } from "../../components/ui/separator";
-import { Settings, User, CreditCard, Bell, Shield, Edit, XCircle, SaveAll } from 'lucide-react';
+import { useAuth, type AuthenticatedUser } from '../../context/AuthContext'; // Import AuthenticatedUser type
+import { Button } from '../../components/ui/button'; // Assuming path is correct relative to app dir
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import { Card, CardContent } from '../../components/ui/card';
+import { Settings, User, CreditCard, Bell, Shield, Edit, XCircle, SaveAll, Loader2 } from 'lucide-react';
 import { toast } from "sonner";
 
-// Import section-specific form components (adjust paths if you place them elsewhere)
+// Import section-specific form components
 import { ProfileInformationForm, type ProfileFormValues } from './components/ProfileInformationForm';
 import { PayoutSettingsForm } from './components/PayoutSettingsForm';
 import { PlatformPreferencesForm } from './components/PlatformPreferencesForm';
 import { SecurityPrivacySettings } from './components/SecurityPrivacySettings';
-import { useAuth } from '../../context/AuthContext';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
-import { Card, CardContent } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
 
+// Corrected import path for updateUserProfile: It should come from user.service.ts
+import { updateUserProfile } from '../../services/user.service';
 
-// Define a more explicit expected structure for LensProfile for this component's use
-// This helps bridge any potential gaps in the LensProfile type from AuthContext
-interface ExpectedLensProfile {
-  name?: string | null;
-  handle?: string | null;
-  bio?: string | null;
-  picture?: {
-    original?: {
-      url: string | null;
-    } | null;
-  } | null;
-  // Add other fields you expect from lensProfile if necessary
-}
-
-
-// Mock initial data - replace with actual data fetching for the logged-in user
-const mockUserProfileData: Partial<ProfileFormValues> = {
-  fullName: "Scott The Creator",
-  username: "scott_creates",
-  bio: "Digital artist exploring the frontiers of web3 and decentralized media. Passionate about building communities.",
-  email: "scott.creator@example.com",
-  website: "https://scottcreates.art",
-  twitter: "https://twitter.com/scottcreates",
-  avatarUrl: "https://picsum.photos/seed/scottprofile/200/200",
-};
-// Add mock data for other sections if needed
 
 export default function CreatorSettingsPage() {
-  const { address, userRole, lensProfile } = useAuth(); // lensProfile type comes from AuthContext
+  // currentUser from AuthContext is the source of truth for displayed data
+  const { currentUser, address, userRole, isLoadingAuth: isLoadingAuthContext } = useAuth();
   const [isEditMode, setIsEditMode] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // For initial data load
-  const [profileData, setProfileData] = useState<Partial<ProfileFormValues>>(mockUserProfileData);
-  // Add states for other sections' data if they are fetched separately
+
+  // profileData will be initialized from currentUser and used by the form
+  const [profileData, setProfileData] = useState<Partial<ProfileFormValues>>({});
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [isPageLoading, setIsPageLoading] = useState(true);
+
 
   useEffect(() => {
-    setIsLoading(true);
-    if (address) {
-      setTimeout(() => {
-        // Cast lensProfile to ExpectedLensProfile to handle potential type discrepancies
-        const currentLensProfile = lensProfile as ExpectedLensProfile | null | undefined;
-
-        setProfileData({
-            fullName: currentLensProfile?.name || currentLensProfile?.handle || mockUserProfileData.fullName,
-            username: currentLensProfile?.handle || mockUserProfileData.username,
-            bio: currentLensProfile?.bio || mockUserProfileData.bio,
-            avatarUrl: currentLensProfile?.picture?.original?.url || mockUserProfileData.avatarUrl,
-            email: mockUserProfileData.email, // Email usually not public on Lens, fetched from backend
-            website: mockUserProfileData.website, // Potentially from Lens metadata or backend
-            twitter: mockUserProfileData.twitter, // Potentially from Lens metadata or backend
-        });
-        setIsLoading(false);
-      }, 1000);
-    } else {
-      setIsLoading(false);
+    if (!isLoadingAuthContext && currentUser) {
+      console.log("Current user from AuthContext:", currentUser);
+      setProfileData({
+        fullName: currentUser.fullName || "",
+        username: currentUser.lensHandle || currentUser.address, // Prefer Lens handle if available
+        bio: currentUser.bio || "",
+        email: currentUser.email || "", // Email from our DB
+        website: currentUser.website || "",
+        twitter: currentUser.twitterHandle ? `https://twitter.com/${currentUser.twitterHandle}` : "", // Construct full URL if only handle is stored
+        avatarUrl: currentUser.avatarUrl || "",
+      });
+      setIsPageLoading(false);
+    } else if (!isLoadingAuthContext && !currentUser && address) {
+      // User is connected but no currentUser data yet (e.g., still in role selection or error)
+      // Or, if this page is accessed before full auth flow completes
+      toast.error("User profile data not available. Please complete authentication.", { id: "profile-data-error"});
+      setIsPageLoading(false);
+      // Potentially redirect or show a specific message
+    } else if (!isLoadingAuthContext && !address) {
+      // Not authenticated, no address
+      setIsPageLoading(false);
+      // This page should ideally be protected by a route guard
     }
-  }, [address, lensProfile]);
+  }, [currentUser, isLoadingAuthContext, address]);
 
 
   const handleProfileSave = async (data: ProfileFormValues): Promise<boolean> => {
-    console.log("Saving Profile Data:", data);
-    // TODO: API call to save profile data
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
-    // For optimistic updates or refetching:
-    setProfileData(prev => ({...prev, ...data}));
-    // toast.success("Profile updated successfully!"); // Moved to ProfileInformationForm
-    return true; // Indicate success
-  };
+    // Explicitly check if currentUser exists before trying to access its properties
+    if (!currentUser) {
+        toast.error("User not authenticated. Cannot save profile.");
+        return false;
+    }
+    // If currentUser exists, it should be of type AuthenticatedUser.
+    // The error "Property 'userId' does not exist on type 'AuthenticatedUser'"
+    // indicates that the AuthenticatedUser type this file sees is missing userId.
+    // This needs to be resolved in AuthContext.tsx or its imported types.
+    if (!currentUser.userId) {
+        toast.error("User session data is incomplete (missing userId). Cannot save profile.");
+        return false;
+    }
 
-  // Add save handlers for other sections: handlePayoutSave, handlePreferencesSave, handleSecuritySave
+    setIsSavingProfile(true);
+    try {
+      // Prepare payload for backend (it expects twitterHandle, not full URL)
+      const twitterHandle = data.twitter?.startsWith("https://twitter.com/")
+        ? data.twitter.substring("https://twitter.com/".length)
+        : data.twitter;
+
+      const payloadToSave = {
+        ...data,
+        twitterHandle: twitterHandle || null, // Send null if empty to clear
+        // Ensure other fields are correctly mapped if names differ from ProfileFormValues and backend
+      };
+
+      const updatedUser = await updateUserProfile(payloadToSave);
+
+      setProfileData({
+        fullName: updatedUser.fullName || "",
+        username: updatedUser.lensHandle || updatedUser.address,
+        bio: updatedUser.bio || "",
+        email: updatedUser.email || "",
+        website: updatedUser.website || "",
+        twitter: updatedUser.twitterHandle ? `https://twitter.com/${updatedUser.twitterHandle}` : "",
+        avatarUrl: updatedUser.avatarUrl || "",
+      });
+      setIsEditMode(false);
+      return true;
+    } catch (error: any) {
+      console.error("Failed to save profile:", error);
+      toast.error("Failed to update profile.", { description: error.message || "Please try again." });
+      return false;
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
 
   const toggleEditMode = () => {
     if (isEditMode) {
-        toast.info("Exited edit mode. Changes not saved unless 'Save' was clicked for each section.");
+        if (currentUser) {
+             setProfileData({
+                fullName: currentUser.fullName || "",
+                username: currentUser.lensHandle || currentUser.address,
+                bio: currentUser.bio || "",
+                email: currentUser.email || "",
+                website: currentUser.website || "",
+                twitter: currentUser.twitterHandle ? `https://twitter.com/${currentUser.twitterHandle}` : "",
+                avatarUrl: currentUser.avatarUrl || "",
+            });
+        }
+        toast.info("Exited edit mode.");
     }
     setIsEditMode(!isEditMode);
   };
 
-  // Basic role check - ideally use middleware for route protection
-  if (userRole && userRole !== 'creator' && userRole !== 'consumer') {
-    // This is a client-side check. For robust security, use Next.js middleware.
-    // Consider redirecting or showing a more generic "access denied" page.
+  if (isLoadingAuthContext || (isPageLoading && address)) {
+      return (
+        <div className="min-h-screen bg-[#16213e] flex flex-col items-center justify-center text-white">
+            <Loader2 className="h-12 w-12 animate-spin text-[#e94560]" />
+            <p className="mt-4 text-lg">Loading Your Settings...</p>
+        </div>
+      );
   }
 
-  // Improved loading state: show loading if address is present but data isn't ready yet,
-  // or if address itself is still loading (implicit from AuthContext).
-  if (isLoading && address) {
-      return <div className="min-h-screen bg-[#16213e] flex items-center justify-center text-white">Loading settings...</div>;
+  if (!currentUser && !address) {
+    return (
+        <div className="min-h-screen bg-[#16213e] flex flex-col items-center justify-center text-white">
+            <h1 className="text-2xl font-bold">Please Connect Your Wallet</h1>
+            <p className="text-[#a1a1aa] mt-2">You need to be authenticated to view your settings.</p>
+        </div>
+    );
   }
-  // If not loading and no address, it means user is not authenticated to see this page.
-  // This case might be handled by a route guard or AuthContext's loading state.
-  // For now, if it reaches here without an address and not loading, it might show an empty/default state.
 
 
   return (
     <div className="min-h-screen bg-[#16213e] p-4 md:p-8 font-inter text-white">
-      {/* Header Section */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -131,8 +163,8 @@ export default function CreatorSettingsPage() {
         </div>
         <Button
           onClick={toggleEditMode}
-          variant={isEditMode ? "destructive" : "default"}
-          className={isEditMode ? "" : "bg-[#e94560] hover:bg-[#d6304a] text-white"}
+          variant={isEditMode ? "outline" : "default"}
+          className={isEditMode ? "border-yellow-500 text-yellow-400 hover:bg-yellow-500/10" : "bg-[#e94560] hover:bg-[#d6304a] text-white"}
         >
           {isEditMode ? <XCircle className="mr-2 h-5 w-5" /> : <Edit className="mr-2 h-5 w-5" />}
           {isEditMode ? 'Cancel Edit Mode' : 'Manage Settings'}
@@ -173,11 +205,15 @@ export default function CreatorSettingsPage() {
         <Card className="bg-[#101829] border-[#0f3460] text-white">
           <CardContent className="pt-6">
             <TabsContent value="profile">
-                <ProfileInformationForm
-                    initialData={profileData}
-                    isEditMode={isEditMode}
-                    onSave={handleProfileSave}
-                />
+                {Object.keys(profileData).length > 0 || !address ? (
+                    <ProfileInformationForm
+                        initialData={profileData}
+                        isEditMode={isEditMode}
+                        onSave={handleProfileSave}
+                    />
+                ) : (
+                    <p className="text-center text-[#a1a1aa]">Loading profile information...</p>
+                )}
             </TabsContent>
             <TabsContent value="payouts">
                 <PayoutSettingsForm isEditMode={isEditMode} />

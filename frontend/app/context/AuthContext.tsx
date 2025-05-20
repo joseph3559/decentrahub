@@ -1,4 +1,4 @@
-// /home/scott/Desktop/Office/decentrahub/frontend/src/app/context/AuthContext.tsx
+// /home/scott/Desktop/Office/decentrahub/frontend/app/context/AuthContext.tsx
 'use client';
 
 import {
@@ -9,159 +9,163 @@ import {
   useEffect,
   useCallback,
 } from 'react';
-import { useWallet } from './WalletContext'; // Assuming WalletContext.tsx is in the same directory
+import { useWallet as useWagmiWalletHook } from './WalletContext'; // Your existing WalletContext hook
+import { RoleSelectionModal } from '../components/auth/RoleSelectionModal'; // Import the modal
+import { toast } from "sonner";
+// Correctly import types from your shared types file
+import {
+    type BackendUser,
+    type BackendLensProfile,
+    type VerifyWalletResponse,
+    type VerifyWalletPayload // Added this import as it's used in the payload
+} from '../../../shared/types'; // Adjusted path to the shared types file
 
-// Define the structure for Lens Profile data you want to store
-interface LensProfile {
-  id: string;
-  handle?: string; // Lens handles can be optional or take time to propagate
-  // Add other relevant profile details you might need
-  // e.g., ownedBy: string; metadataUrl: string;
-}
+// Import the service function
+import { verifyWalletWithBackend } from '../services/auth.service';
 
+
+// UserRoleType from your backend User.model.ts (or shared types)
 export type UserRole = 'creator' | 'consumer' | null;
+
+// AuthenticatedUser now correctly extends BackendUser without overriding properties
+// The properties like userId, avatarUrl, etc., will be inherited from BackendUser
+export interface AuthenticatedUser extends BackendUser {}
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  userRole: UserRole;
-  lensProfile: LensProfile | null;
-  isLoadingAuth: boolean; // To show loading state during auth check
-  address: `0x${string}` | undefined; // Exposing connected address for convenience
-  loginWithLens: () => Promise<void>; // Function to trigger login/profile fetch
-  logoutLens: () => void; // Function to handle logout
+  currentUser: AuthenticatedUser | null;
+  userRole: UserRole; // Still useful for quick checks
+  lensProfileData: BackendLensProfile | null;
+  isLoadingAuth: boolean;
+  address: `0x${string}` | undefined;
+  logout: () => void;
+  triggerAuthFlow: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Simulated Lens Service function (replace with your actual service call)
-// This would typically live in something like `src/app/services/lens.service.ts`
-const fetchLensProfileByAddress = async (
-  address: `0x${string}`
-): Promise<LensProfile | null> => {
-  console.log('AuthContext: Fetching Lens profile for address:', address);
-  // Simulate API call delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-
-  // --- SIMULATED LENS API RESPONSE ---
-  // In a real scenario, you would query the Lens API
-  // For example, using the Lens SDK or a direct GraphQL query
-  // to get profiles owned by the address.
-  // We'll simulate finding a profile for demonstration.
-  // Replace this with your actual Lens profile fetching logic.
-
-  // Example: If you want to test with a specific address having a profile
-  if (address.toLowerCase() === '0xYourTestAddressWithProfile'.toLowerCase()) { // Replace with a test address
-    return {
-      id: '0x01', // Example profile ID
-      handle: 'testuser.lens', // Example handle
-    };
-  }
-  // Simulate no profile found for other addresses
-  // return null;
-
-  // For broad testing, let's assume any connected address has a basic profile
-  // In a real app, many addresses won't have a Lens profile.
-  return {
-    id: `lens-profile-${address.slice(0, 6)}`, // Dummy ID
-    handle: `${address.slice(0, 6)}.lens`,      // Dummy handle
-  };
-  // --- END SIMULATION ---
-};
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { address: walletAddress, isConnected: isWalletConnected } = useWallet();
+  const { address: walletAddress, isConnected: isWalletConnected, disconnect: wagmiDisconnect } = useWagmiWalletHook();
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<AuthenticatedUser | null>(null);
   const [userRole, setUserRole] = useState<UserRole>(null);
-  const [lensProfile, setLensProfile] = useState<LensProfile | null>(null);
-  const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true); // Start true to check on load
+  const [lensProfileData, setLensProfileData] = useState<BackendLensProfile | null>(null);
+  const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);
+  const [showRoleModal, setShowRoleModal] = useState<boolean>(false);
 
   const resetAuthState = useCallback(() => {
     setIsAuthenticated(false);
+    setCurrentUser(null);
     setUserRole(null);
-    setLensProfile(null);
+    setLensProfileData(null);
     setIsLoadingAuth(false);
+    setShowRoleModal(false);
     console.log('AuthContext: Auth state reset.');
+    // localStorage.removeItem('decentrahub_user_session');
   }, []);
 
-  const loginWithLens = useCallback(async () => {
+  const processBackendAuthResponse = (data: VerifyWalletResponse) => {
+    // data.user is of type BackendUser, which is compatible with AuthenticatedUser
+    setCurrentUser(data.user);
+    setUserRole(data.user.role);
+    setLensProfileData(data.lensProfile);
+    setIsAuthenticated(true);
+    // localStorage.setItem('decentrahub_user_session', JSON.stringify({ user: data.user, lensProfile: data.lensProfile }));
+    toast.success(data.message || "Successfully authenticated!", {
+        description: `Welcome, ${data.user.fullName || data.user.address} (${data.user.role})`
+    });
+  };
+
+  const handleRoleSubmittedAndVerify = async (
+    selectedRole: 'creator' | 'consumer',
+    additionalInfo: { fullName?: string; email?: string }
+  ) => {
+    setShowRoleModal(false);
     if (!walletAddress) {
-      console.log('AuthContext: No wallet address, cannot login with Lens.');
-      resetAuthState(); // Ensure clean state if address disappears
+      toast.error("Wallet address not found after role submission.");
+      resetAuthState();
       return;
     }
-
     setIsLoadingAuth(true);
-    console.log('AuthContext: Attempting login with Lens for address:', walletAddress);
-
     try {
-      const profile = await fetchLensProfileByAddress(walletAddress);
-
-      if (profile) {
-        setLensProfile(profile);
-        setIsAuthenticated(true);
-        // TODO: Implement your role determination logic
-        // For now, anyone with a Lens profile is a 'consumer'.
-        // You might check profile metadata or other criteria for 'creator' role.
-        setUserRole('consumer'); // Default role for authenticated user
-        console.log('AuthContext: Lens Profile found and user authenticated.', profile);
-      } else {
-        console.log('AuthContext: No Lens Profile found for this address.');
-        resetAuthState(); // No profile, so not authenticated in DecentraHub context
-      }
-    } catch (error) {
-      console.error('AuthContext: Error fetching Lens profile:', error);
+      // Construct the payload according to VerifyWalletPayload
+      const payload: VerifyWalletPayload = {
+        walletAddress,
+        role: selectedRole,
+        fullName: additionalInfo.fullName,
+        email: additionalInfo.email,
+        // avatarUrl, website, twitterHandle could be added here if collected in modal
+      };
+      const backendResponse = await verifyWalletWithBackend(payload);
+      processBackendAuthResponse(backendResponse);
+    } catch (error: any) {
+      console.error('AuthContext: Error verifying wallet with backend:', error);
+      toast.error("Authentication Failed", { description: error.message || "Could not connect to the server." });
       resetAuthState();
     } finally {
       setIsLoadingAuth(false);
     }
-  }, [walletAddress, resetAuthState]);
+  };
 
-  const logoutLens = useCallback(() => {
-    // The actual wallet disconnection is handled by ConnectKit/WalletContext.
-    // This function ensures our app's auth state is reset.
-    console.log('AuthContext: logoutLens called.');
-    resetAuthState();
-    // You might want to also explicitly call disconnect from useWallet() if it's not automatically
-    // clearing address and isConnected state that AuthContext relies on.
-    // Example: wallet.disconnect(); (if you pass disconnect from WalletContext)
-  }, [resetAuthState]);
-
-  // Effect to react to wallet connection changes
   useEffect(() => {
-    if (isWalletConnected && walletAddress) {
-      // Wallet has connected, try to log in with Lens
-      loginWithLens();
-    } else {
-      // Wallet disconnected or no address
+    if (isWalletConnected && walletAddress && !isAuthenticated && !isLoadingAuth && !currentUser) {
+      console.log('AuthContext: Wallet connected, user not authenticated in this session. Showing role modal.');
+      setShowRoleModal(true);
+    } else if (!isWalletConnected && isAuthenticated) {
+      console.log('AuthContext: Wallet disconnected, resetting auth state for this session.');
       resetAuthState();
     }
-  }, [isWalletConnected, walletAddress, loginWithLens, resetAuthState]);
 
-
-  // Initial check on component mount if wallet is already connected (e.g. from persisted session)
-  // The above useEffect already handles this, but explicitly setting isLoadingAuth to false
-  // if not connected on mount can be good.
-   useEffect(() => {
-    if (!isWalletConnected) {
-      setIsLoadingAuth(false);
+    if (!isWalletConnected && !isAuthenticated) {
+        setIsLoadingAuth(false);
     }
-  }, [isWalletConnected]);
+  }, [isWalletConnected, walletAddress, isAuthenticated, isLoadingAuth, currentUser, resetAuthState]);
 
+  const logout = useCallback(() => {
+    wagmiDisconnect();
+    resetAuthState();
+    toast.info("You have been logged out.");
+  }, [wagmiDisconnect, resetAuthState]);
+
+  const triggerAuthFlow = () => {
+    if (!isWalletConnected) {
+        toast.info("Please connect your wallet first using the ConnectKit button.");
+        return;
+    }
+    if (isWalletConnected && walletAddress && !isAuthenticated && !currentUser) {
+        console.log('AuthContext: Triggering role modal manually.');
+        setShowRoleModal(true);
+    } else if (isAuthenticated) {
+        toast.success("You are already authenticated!");
+    }
+  };
 
   return (
     <AuthContext.Provider
       value={{
         isAuthenticated,
+        currentUser,
         userRole,
-        lensProfile,
+        lensProfileData,
         isLoadingAuth,
         address: walletAddress,
-        loginWithLens,
-        logoutLens,
+        logout,
+        triggerAuthFlow,
       }}
     >
       {children}
+      <RoleSelectionModal
+        isOpen={showRoleModal && !!walletAddress && !isAuthenticated && !currentUser}
+        onClose={() => {
+            setShowRoleModal(false);
+            if (!isAuthenticated) {
+                toast.info("Role selection process was closed.");
+            }
+        }}
+        onRoleSubmit={handleRoleSubmittedAndVerify}
+        walletAddress={walletAddress}
+      />
     </AuthContext.Provider>
   );
 };

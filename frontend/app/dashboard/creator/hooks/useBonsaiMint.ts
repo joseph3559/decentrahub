@@ -1,67 +1,86 @@
 // /home/scott/Desktop/Office/decentrahub/frontend/app/dashboard/creator/hooks/useBonsaiMint.ts
 import { useState } from 'react';
 
-// Define the structure of the data needed for minting
-// This should align with your ContentForm schema and Bonsai's requirements
+// This MintData interface should align with what your ContentForm produces
+// and what your backend /api/v1/content/mint endpoint expects.
 export interface MintData {
   title: string;
   description: string;
-  mediaIpfsUrl: string; // URL from IPFS upload
-  mediaType: string;
+  mediaIpfsUrl: string; // IPFS URL of the main media file
+  mediaType: string;    // e.g., 'image/png', 'video/mp4'
   category: 'Article' | 'Music' | 'Video' | 'Art';
   tags: string[];
-  price: number; // Or more complex pricing object
-  // Add Bonsai specific smart media configurations here
-  // e.g., smartMediaConfig: any;
-  // Add user's wallet address
-  creatorAddress: string;
+  price: number;
+  creatorAddress: string; // Wallet address of the creator
+  // smartMediaConfig?: any; // Optional: Configuration for Bonsai smart media features
 }
+
+// Structure of the expected successful response from the backend's /mint endpoint
+interface BackendMintSuccessResponse {
+  message: string;
+  nftMetadataUrl: string;
+  bonsaiTransaction: { // This structure comes from your backend's mock
+    transactionHash: string;
+    nftId: string;
+    message: string;
+  };
+  lensPublicationId?: string; // Optional
+}
+
+// Structure for the error response from the backend
+interface BackendErrorResponse {
+    message: string;
+    error?: string; // Optional detailed error message
+}
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5001/api/v1';
 
 export const useBonsaiMint = () => {
   const [isMinting, setIsMinting] = useState(false);
   const [mintError, setMintError] = useState<string | null>(null);
-  const [mintSuccessData, setMintSuccessData] = useState<any>(null); // Store response from successful mint
+  const [mintSuccessData, setMintSuccessData] = useState<BackendMintSuccessResponse | null>(null);
 
-  const mintWithBonsai = async (data: MintData) => {
+  const mintWithBonsai = async (data: MintData): Promise<{ success: boolean; transactionHash?: string; nftId?: string; error?: string }> => {
     setIsMinting(true);
     setMintError(null);
     setMintSuccessData(null);
 
-    console.log('Attempting to mint with Bonsai SDK with data:', data);
+    console.log('Attempting to mint via backend API with data:', data);
 
-    // TODO: Integrate Bonsai SDK here
-    // 1. Initialize Bonsai SDK (if not already done globally)
-    // 2. Prepare metadata according to Bonsai's schema
-    // 3. Call Bonsai's minting function
-    //    - This will involve interacting with the user's wallet for transaction signing
-    //    - Ensure it's deployed on Lens Chain
-
-    // Simulate API call / SDK interaction
     try {
-      await new Promise(resolve => setTimeout(resolve, 3000)); // Simulate network delay
+      const response = await fetch(`${API_BASE_URL}/content/mint`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // TODO: Add Authorization header if your backend requires authentication for this endpoint
+          // e.g., 'Authorization': `Bearer ${yourAuthToken}`,
+        },
+        body: JSON.stringify(data),
+      });
 
-      // Simulate a successful minting transaction
-      // In a real scenario, this would be the response from the Bonsai SDK / blockchain
-      const MOCK_TX_HASH = '0x123abc456def789ghi';
-      const MOCK_NFT_ID = Math.floor(Math.random() * 1000).toString();
+      const responseData = await response.json();
 
-      // Check for a simulated error condition (e.g., based on title)
-      if (data.title.toLowerCase().includes("fail")) {
-        throw new Error("Simulated Bonsai minting error: Transaction reverted.");
+      if (!response.ok) {
+        // If server returns an error (e.g., 400, 500), responseData might contain an error message
+        const errorMsg = (responseData as BackendErrorResponse).message || `Error ${response.status}: Failed to mint content.`;
+        console.error('Backend minting error:', responseData);
+        throw new Error(errorMsg);
       }
 
-      setMintSuccessData({
-        transactionHash: MOCK_TX_HASH,
-        nftId: MOCK_NFT_ID,
-        message: `Successfully minted "${data.title}"! NFT ID: ${MOCK_NFT_ID}`,
-      });
-      console.log('Mock Bonsai minting successful:', MOCK_TX_HASH);
-      return { success: true, transactionHash: MOCK_TX_HASH, nftId: MOCK_NFT_ID };
+      const successResponse = responseData as BackendMintSuccessResponse;
+      setMintSuccessData(successResponse);
+      console.log('Backend minting successful:', successResponse);
+      return {
+        success: true,
+        transactionHash: successResponse.bonsaiTransaction.transactionHash,
+        nftId: successResponse.bonsaiTransaction.nftId,
+      };
 
     } catch (error: any) {
-      console.error('Bonsai minting failed:', error);
-      setMintError(error.message || 'An unknown error occurred during minting.');
-      return { success: false, error: error.message || 'Unknown error' };
+      console.error('Error calling mint API or processing response:', error);
+      const errorMessage = error.message || 'An unknown error occurred during minting.';
+      setMintError(errorMessage);
+      return { success: false, error: errorMessage };
     } finally {
       setIsMinting(false);
     }
