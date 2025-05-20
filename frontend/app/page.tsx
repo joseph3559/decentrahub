@@ -25,6 +25,7 @@ import {
 } from 'react-icons/si';
 import { BsTwitterX, BsLinkedin, BsDiscord, BsGithub } from 'react-icons/bs';
 import { FiChevronRight } from 'react-icons/fi';
+import Image from 'next/image';
 
 // Import Swiper styles (you might need to do this in a global CSS file or layout if issues persist)
 // import 'swiper/css';
@@ -233,7 +234,7 @@ const MarketplaceShowcaseSection = () => (
             transition={{ delay: index * 0.1, duration: 0.6 }}
             className="bg-slate-700/50 rounded-lg overflow-hidden shadow-lg hover:shadow-purple-500/40 transition-all duration-300 group"
           >
-            <img src={item.image} alt={item.title} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
+            <Image src={item.image} alt={item.title} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
             <div className="p-4">
               <h3 className="text-lg font-semibold mb-1 text-white">{item.title}</h3>
               <p className="text-xs text-purple-400 mb-2">By {item.creator} - {item.category}</p>
