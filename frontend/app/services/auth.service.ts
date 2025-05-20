@@ -1,7 +1,5 @@
 // /home/scott/Desktop/Office/decentrahub/frontend/app/services/auth.service.ts
 import {
-  type BackendUser,
-  type BackendLensProfile,
   type VerifyWalletResponse,
   type VerifyWalletPayload,
 } from '../../../shared/types'; // Ensure this path to shared/types.ts is correct

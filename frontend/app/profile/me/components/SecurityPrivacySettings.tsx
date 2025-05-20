@@ -2,9 +2,8 @@
 'use client';
 
 import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
-import { ShieldCheck, KeyRound, Lock, Activity, Save } from "lucide-react";
+import { KeyRound, Lock, Activity, Save } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 // import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"; // For modals
@@ -46,7 +45,7 @@ export const SecurityPrivacySettings = ({ isEditMode }: SecurityPrivacySettingsP
         <Button onClick={handleChangePassword} variant="outline" disabled={!isEditMode || isSaving} className="border-orange-500 text-orange-400 hover:bg-orange-500/10">
           Change Password
         </Button>
-        <p className="text-xs text-slate-500 mt-1">It's recommended to use a strong, unique password.</p>
+        <p className="text-xs text-slate-500 mt-1">Its recommended to use a strong, unique password.</p>
       </div>
 
       <div className="border-t border-[#0f3460] pt-6">

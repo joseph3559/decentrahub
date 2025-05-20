@@ -3,11 +3,11 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useAuth, type AuthenticatedUser } from '../../context/AuthContext'; // Import AuthenticatedUser type
+import { useAuth } from '../../context/AuthContext'; // Import AuthenticatedUser type
 import { Button } from '../../components/ui/button'; // Assuming path is correct relative to app dir
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { Card, CardContent } from '../../components/ui/card';
-import { Settings, User, CreditCard, Bell, Shield, Edit, XCircle, SaveAll, Loader2 } from 'lucide-react';
+import { Settings, User, CreditCard, Bell, Shield, Edit, XCircle, Loader2 } from 'lucide-react';
 import { toast } from "sonner";
 
 // Import section-specific form components
