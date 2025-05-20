@@ -190,8 +190,12 @@ const NftCard = ({ item }: { item: NftItem }) => {
     className="bg-[#1a1a2e] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-[#e94560]/30 transition-all duration-300 transform hover:-translate-y-1 group flex flex-col"
   >
     <div className="relative aspect-[4/3] overflow-hidden"> {/* Aspect ratio for image */}
-      <Image src={item.imageUrl} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-      <div className="absolute top-2 right-2 bg-black/30 p-1.5 rounded-full">
+      <Image
+          src={item.imageUrl}
+          alt={item.title}
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-300"
+        />      <div className="absolute top-2 right-2 bg-black/30 p-1.5 rounded-full">
          <button onClick={handleLike} className={`transition-colors duration-200 ${isLiked ? 'text-[#e94560]' : 'text-white/70 hover:text-white'}`}>
             <FiHeart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
         </button>

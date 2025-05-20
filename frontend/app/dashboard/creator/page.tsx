@@ -1,19 +1,16 @@
-// /home/scott/Desktop/Office/decentrahub/frontend/app/dashboard/creator/page.tsx
 'use client';
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useAuth } from '../../context/AuthContext'; // Adjusted path
-import { Button } from '../../components/ui/button'; // Adjusted path
+import { useAuth } from '../../context/AuthContext';
+import { Button } from '../../components/ui/button';
 import { ArrowRight, PlusCircle, BarChart3, Settings, Palette } from 'lucide-react';
-import { useState, useEffect } from 'react'; // Added useEffect for potential future use
-
-// Interface for dashboard section links
+import { useState, useEffect } from 'react';
 interface DashboardSectionLink {
   href: string;
   title: string;
   description: string;
-  Icon: React.ElementType; // Lucide icon component
+  Icon: React.ElementType;
   bgColorClass: string;
   textColorClass: string;
   ctaText?: string;
@@ -58,7 +55,6 @@ const creatorDashboardSections: DashboardSectionLink[] = [
   }
 ];
 
-// Placeholder for creator stats - fetch from backend or context
 interface CreatorStats {
   totalNftsMinted: number;
   totalEarnings: number;
@@ -72,30 +68,22 @@ const mockCreatorStats: CreatorStats = {
 };
 
 export default function CreatorDashboardPage() {
-  // Corrected destructuring: use lensProfileData as defined in AuthContextType
   const { currentUser, lensProfileData, address, userRole } = useAuth();
   const [creatorStats, setCreatorStats] = useState<CreatorStats>(mockCreatorStats);
 
-  // TODO: Fetch actual creator stats when the component mounts or user data changes
   useEffect(() => {
     if (address && currentUser) { // Check if currentUser is available
-      // Example: Update followersCount if available in currentUser or lensProfileData
-      // This assumes lensProfileData might have stats, or currentUser has a followers field.
-      // Adjust based on your actual data structure.
+
       const followers = lensProfileData?.stats?.totalFollowers || currentUser?.lensProfileData?.stats?.totalFollowers || 0; // Example access
       setCreatorStats(prevStats => ({
         ...prevStats,
         followersCount: followers,
-        // totalNftsMinted: currentUser.nftsMintedCount || 0, // If you have such data on currentUser
-        // totalEarnings: currentUser.totalEarnings || 0,
       }));
     }
   }, [address, currentUser, lensProfileData]);
 
-  // A simple greeting, prioritizing currentUser's lensHandle or fullName
   const creatorName = currentUser?.lensHandle || currentUser?.fullName || (address ? `${address.slice(0,6)}...${address.slice(-4)}` : 'Creator');
 
-  // Ensure this page is only accessible to creators
   if (userRole && userRole !== 'creator') {
     return (
         <div className="min-h-screen bg-[#16213e] p-4 md:p-8 font-inter text-white flex flex-col items-center justify-center">
@@ -125,7 +113,6 @@ export default function CreatorDashboardPage() {
         </p>
       </motion.div>
 
-      {/* Quick Stats Section */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -146,7 +133,6 @@ export default function CreatorDashboardPage() {
         </div>
       </motion.div>
 
-      {/* Navigation Cards to Dashboard Sections */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
         {creatorDashboardSections.map((section, index) => (
           <motion.div
@@ -156,7 +142,7 @@ export default function CreatorDashboardPage() {
             transition={{ delay: 0.3 + index * 0.1, duration: 0.5 }}
             className={`group rounded-xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] bg-gradient-to-br ${section.bgColorClass}`}
           >
-            <Link href={section.href} className="block p-6 md:p-8 h-full flex flex-col justify-between">
+            <Link href={section.href} className="p-6 md:p-8 h-full flex flex-col justify-between">
               <div>
                 <div className="flex items-start justify-between mb-3">
                   <section.Icon className={`w-10 h-10 md:w-12 md:h-12 ${section.textColorClass} opacity-80`} />
