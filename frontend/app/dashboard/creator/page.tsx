@@ -2,11 +2,11 @@
 'use client';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';// ShadCN Button
-import { ArrowRight, PlusCircle, BarChart3, Settings, Palette } from 'lucide-react'; // Added more specific icons
-import { useState } from 'react';
-import { Button } from '../../components/ui/button';
-import { useAuth } from '../../context/AuthContext';
+import { motion } from 'framer-motion';
+import { useAuth } from '../../context/AuthContext'; // Adjusted path
+import { Button } from '../../components/ui/button'; // Adjusted path
+import { ArrowRight, PlusCircle, BarChart3, Settings, Palette } from 'lucide-react';
+import { useState, useEffect } from 'react'; // Added useEffect for potential future use
 
 // Interface for dashboard section links
 interface DashboardSectionLink {
@@ -30,16 +30,16 @@ const creatorDashboardSections: DashboardSectionLink[] = [
     ctaText: 'Start Minting',
   },
   {
-    href: '/dashboard/creator/my-creations', // New page to be created
+    href: '/dashboard/creator/my-creations',
     title: 'My Creations',
     description: 'View and manage all your minted NFTs. Track their status, update listings, and see engagement.',
-    Icon: Palette, // Generic icon, can be more dynamic
+    Icon: Palette,
     bgColorClass: 'from-teal-500 to-cyan-500',
     textColorClass: 'text-teal-100',
     ctaText: 'View My NFTs',
   },
   {
-    href: '/dashboard/creator/earnings', // New page to be created
+    href: '/dashboard/creator/earnings',
     title: 'Earnings & Analytics',
     description: 'Track your sales, royalties, and content performance. Get insights from Alchemy.',
     Icon: BarChart3,
@@ -48,7 +48,7 @@ const creatorDashboardSections: DashboardSectionLink[] = [
     ctaText: 'View Analytics',
   },
   {
-    href: '/profile/me', // Assuming a general profile page, could be /dashboard/creator/settings
+    href: '/profile/me',
     title: 'Creator Settings',
     description: 'Manage your creator profile, payout information, and platform preferences.',
     Icon: Settings,
@@ -61,36 +61,42 @@ const creatorDashboardSections: DashboardSectionLink[] = [
 // Placeholder for creator stats - fetch from backend or context
 interface CreatorStats {
   totalNftsMinted: number;
-  totalEarnings: number; // Could be in a specific currency e.g., GHO or ETH
-  followersCount: number; // From Lens Protocol
+  totalEarnings: number;
+  followersCount: number;
 }
 
 const mockCreatorStats: CreatorStats = {
   totalNftsMinted: 28,
-  totalEarnings: 1250.75, // Example value
+  totalEarnings: 1250.75,
   followersCount: 1800,
 };
 
 export default function CreatorDashboardPage() {
-  const { lensProfile, address, userRole } = useAuth(); // Get user info
+  // Corrected destructuring: use lensProfileData as defined in AuthContextType
+  const { currentUser, lensProfileData, address, userRole } = useAuth();
   const [creatorStats, setCreatorStats] = useState<CreatorStats>(mockCreatorStats);
 
   // TODO: Fetch actual creator stats when the component mounts or user data changes
-  // useEffect(() => {
-  //   if (address) {
-  //     // fetchCreatorStats(address).then(setCreatorStats);
-  //     // fetchLensFollowerCount(lensProfile?.id).then(count => setCreatorStats(prev => ({...prev, followersCount: count})));
-  //   }
-  // }, [address, lensProfile]);
+  useEffect(() => {
+    if (address && currentUser) { // Check if currentUser is available
+      // Example: Update followersCount if available in currentUser or lensProfileData
+      // This assumes lensProfileData might have stats, or currentUser has a followers field.
+      // Adjust based on your actual data structure.
+      const followers = lensProfileData?.stats?.totalFollowers || currentUser?.lensProfileData?.stats?.totalFollowers || 0; // Example access
+      setCreatorStats(prevStats => ({
+        ...prevStats,
+        followersCount: followers,
+        // totalNftsMinted: currentUser.nftsMintedCount || 0, // If you have such data on currentUser
+        // totalEarnings: currentUser.totalEarnings || 0,
+      }));
+    }
+  }, [address, currentUser, lensProfileData]);
 
-  // A simple greeting
-  const creatorName = lensProfile?.handle || (address ? `${address.slice(0,6)}...${address.slice(-4)}` : 'Creator');
+  // A simple greeting, prioritizing currentUser's lensHandle or fullName
+  const creatorName = currentUser?.lensHandle || currentUser?.fullName || (address ? `${address.slice(0,6)}...${address.slice(-4)}` : 'Creator');
 
-  // Ensure this page is only accessible to creators (example check)
-  // In a real app, this would be handled by route protection / middleware
+  // Ensure this page is only accessible to creators
   if (userRole && userRole !== 'creator') {
-     // This is a client-side redirect, better to handle with Next.js middleware or server-side checks
-     // For now, just showing a message.
     return (
         <div className="min-h-screen bg-[#16213e] p-4 md:p-8 font-inter text-white flex flex-col items-center justify-center">
             <h1 className="text-2xl font-bold text-red-500">Access Denied</h1>
@@ -164,7 +170,7 @@ export default function CreatorDashboardPage() {
               </div>
               <div className="mt-auto">
                 <Button
-                    variant="ghost" // Using ghost to better blend with card, or use a specific style
+                    variant="ghost"
                     size="sm"
                     className={`bg-white/20 hover:bg-white/30 text-white group-hover:bg-white/30 backdrop-blur-sm rounded-md px-4 py-2 flex items-center transition-all duration-300`}
                 >

@@ -12,30 +12,35 @@ import {
 import { useWallet as useWagmiWalletHook } from './WalletContext'; // Your existing WalletContext hook
 import { RoleSelectionModal } from '../components/auth/RoleSelectionModal'; // Import the modal
 import { toast } from "sonner";
+
 // Correctly import types from your shared types file
 import {
     type BackendUser,
     type BackendLensProfile,
     type VerifyWalletResponse,
-    type VerifyWalletPayload // Added this import as it's used in the payload
-} from '../../../shared/types'; // Adjusted path to the shared types file
+    type VerifyWalletPayload
+} from '../../../shared/types'; // Ensure this path is correct for your project structure
 
 // Import the service function
-import { verifyWalletWithBackend } from '../services/auth.service';
+import { verifyWalletWithBackend } from '../services/auth.service'; // Ensure auth.service.ts exports this
 
 
 // UserRoleType from your backend User.model.ts (or shared types)
 export type UserRole = 'creator' | 'consumer' | null;
 
-// AuthenticatedUser now correctly extends BackendUser without overriding properties
-// The properties like userId, avatarUrl, etc., will be inherited from BackendUser
-export interface AuthenticatedUser extends BackendUser {}
+// AuthenticatedUser now correctly extends BackendUser.
+// It will inherit all properties from BackendUser (like userId, avatarUrl, etc.)
+// No need to redeclare or add extra properties here unless they are truly distinct
+// and not part of the BackendUser structure.
+export interface AuthenticatedUser extends BackendUser {
+  [x: string]: any;
+}
 
 interface AuthContextType {
   isAuthenticated: boolean;
   currentUser: AuthenticatedUser | null;
   userRole: UserRole; // Still useful for quick checks
-  lensProfileData: BackendLensProfile | null;
+  lensProfileData: BackendLensProfile | null; // Stores the Lens-specific part of the profile
   isLoadingAuth: boolean;
   address: `0x${string}` | undefined;
   logout: () => void;
@@ -66,7 +71,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const processBackendAuthResponse = (data: VerifyWalletResponse) => {
-    // data.user is of type BackendUser, which is compatible with AuthenticatedUser
+    // data.user is of type BackendUser. Since AuthenticatedUser extends BackendUser
+    // and doesn't add new *required* fields, this assignment is valid.
     setCurrentUser(data.user);
     setUserRole(data.user.role);
     setLensProfileData(data.lensProfile);

@@ -6,11 +6,16 @@ import { motion } from 'framer-motion';
 import { Edit3, Trash2, Eye, BarChart2, Tag } from 'lucide-react'; // Icons for actions
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
+import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 
 export type NftStatus = 'Listed' | 'Not Listed' | 'Auction' | 'Sold';
 export type NftCategory = 'Article' | 'Music' | 'Video' | 'Art';
 
 export interface MyCreation {
+  imageUrl: string | StaticImport;
+  bidAmount: number | undefined;
+  creatorName: any;
+  lastBid: boolean;
   id: string;
   title: string;
   thumbnailUrl: string;

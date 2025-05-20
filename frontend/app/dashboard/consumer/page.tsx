@@ -3,13 +3,14 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useAuth } from '../../context/AuthContext'; // Adjusted path
+import { Button } from '../../components/ui/button'; // Adjusted path
 import { ArrowRight, ShoppingBag, Users, Layers, ShieldCheck } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-import { useState } from 'react';
-import { Button } from '../../components/ui/button';
+import { useState, useEffect } from 'react'; // Added useEffect
 
 // Interface for dashboard section links
 interface DashboardSectionLink {
+  ctaText: string;
   href: string;
   title: string;
   description: string;
@@ -26,6 +27,7 @@ const dashboardSections: DashboardSectionLink[] = [
     Icon: Layers,
     bgColorClass: 'from-purple-600 to-indigo-600',
     textColorClass: 'text-purple-100',
+    ctaText: ''
   },
   {
     href: '/dashboard/consumer/purchasedcontent',
@@ -34,6 +36,7 @@ const dashboardSections: DashboardSectionLink[] = [
     Icon: ShoppingBag,
     bgColorClass: 'from-sky-500 to-cyan-500',
     textColorClass: 'text-sky-100',
+    ctaText: ''
   },
   {
     href: '/dashboard/consumer/following',
@@ -42,6 +45,7 @@ const dashboardSections: DashboardSectionLink[] = [
     Icon: Users,
     bgColorClass: 'from-emerald-500 to-green-500',
     textColorClass: 'text-emerald-100',
+    ctaText: ''
   },
   // Add more sections as needed, e.g., Profile Settings
   {
@@ -51,6 +55,7 @@ const dashboardSections: DashboardSectionLink[] = [
     Icon: ShieldCheck, // Or UserCog
     bgColorClass: 'from-slate-600 to-gray-700',
     textColorClass: 'text-slate-100',
+    ctaText: ''
   }
 ];
 
@@ -68,18 +73,39 @@ const mockUserStats: UserStats = {
 };
 
 export default function ConsumerDashboardPage() {
-  const { lensProfile , address } = useAuth(); // Get user info if needed for personalization
-  const [userStats] = useState<UserStats>(mockUserStats);
+  // Corrected destructuring: use currentUser and lensProfileData
+  const { currentUser, lensProfileData, address, userRole } = useAuth();
+  const [userStats, setUserStats] = useState<UserStats>(mockUserStats); // Changed from const to let/useState for potential updates
 
   // TODO: Fetch actual user stats when the component mounts or user data changes
-  // useEffect(() => {
-  //   if (address) {
-  //     // fetchUserStats(address).then(setUserStats);
-  //   }
-  // }, [address]);
+  useEffect(() => {
+    if (address && currentUser) {
+      // Example: Update stats based on currentUser or lensProfileData
+      // This is just a placeholder, actual logic will depend on your data structure
+      // setUserStats(prevStats => ({
+      //   ...prevStats,
+      //   nftsOwned: currentUser.ownedNftCount || 0, // Assuming such a field exists
+      //   creatorsFollowed: lensProfileData?.stats?.totalFollowing || 0,
+      // }));
+    }
+  }, [address, currentUser, lensProfileData]);
 
-  // A simple greeting
-  const userName = lensProfile?.handle || (address ? `${address.slice(0,6)}...${address.slice(-4)}` : 'User');
+  // A simple greeting, prioritizing currentUser's lensHandle or fullName
+  const userName = currentUser?.lensHandle || currentUser?.fullName || (address ? `${address.slice(0,6)}...${address.slice(-4)}` : 'User');
+
+  // Basic role check - this page is for consumers
+  if (userRole && userRole !== 'consumer') {
+    return (
+        <div className="min-h-screen bg-[#16213e] p-4 md:p-8 font-inter text-white flex flex-col items-center justify-center">
+            <h1 className="text-2xl font-bold text-red-500">Access Denied</h1>
+            <p className="text-[#a1a1aa] mt-2">This dashboard is for consumers only.</p>
+            <Link href="/marketplace" className="mt-4">
+                <Button variant="outline">Go to Marketplace</Button>
+            </Link>
+        </div>
+    );
+  }
+
 
   return (
     <div className="min-h-screen bg-[#16213e] p-4 md:p-8 font-inter text-white">
@@ -126,19 +152,29 @@ export default function ConsumerDashboardPage() {
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ delay: 0.3 + index * 0.1, duration: 0.5 }}
-            className={`rounded-xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] bg-gradient-to-br ${section.bgColorClass}`}
+            className={`group rounded-xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] bg-gradient-to-br ${section.bgColorClass}`}
           >
-            <Link href={section.href} className="block p-6 md:p-8 h-full">
-              <div className="flex items-start justify-between mb-3">
-                <section.Icon className={`w-10 h-10 md:w-12 md:h-12 ${section.textColorClass} opacity-80`} />
-                <ArrowRight className={`w-6 h-6 ${section.textColorClass} opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-transform`} />
+            <Link href={section.href} className="block p-6 md:p-8 h-full flex flex-col justify-between">
+              <div>
+                <div className="flex items-start justify-between mb-3">
+                  <section.Icon className={`w-10 h-10 md:w-12 md:h-12 ${section.textColorClass} opacity-80`} />
+                </div>
+                <h2 className={`text-xl md:text-2xl font-montserrat font-semibold text-white mb-2`}>
+                  {section.title}
+                </h2>
+                <p className={`text-sm font-opensans ${section.textColorClass} leading-relaxed mb-4`}>
+                  {section.description}
+                </p>
               </div>
-              <h2 className={`text-xl md:text-2xl font-montserrat font-semibold text-white mb-2`}>
-                {section.title}
-              </h2>
-              <p className={`text-sm font-opensans ${section.textColorClass} leading-relaxed`}>
-                {section.description}
-              </p>
+              <div className="mt-auto">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className={`bg-white/20 hover:bg-white/30 text-white group-hover:bg-white/30 backdrop-blur-sm rounded-md px-4 py-2 flex items-center transition-all duration-300`}
+                >
+                  {section.ctaText || 'Go to Section'} <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </div>
             </Link>
           </motion.div>
         ))}

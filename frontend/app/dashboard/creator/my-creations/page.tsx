@@ -16,11 +16,41 @@ import { EmptyState } from '../../../components/EmptyState';
 
 // Mock Data - Replace with actual data fetching
 const mockCreatorNfts: MyCreation[] = [
-  { id: 'nft1', title: 'Genesis Bloom', thumbnailUrl: 'https://picsum.photos/seed/genart1/400/300', category: 'Art', mintedDate: '2024-05-01', status: 'Listed', price: 1.5, currency: 'ETH', views: 1200, sales: 5 },
-  { id: 'nft2', title: 'Decentralized Rhapsody', thumbnailUrl: 'https://picsum.photos/seed/musicnft1/400/300', category: 'Music', mintedDate: '2024-04-15', status: 'Listed', price: 0.5, currency: 'ETH', views: 500, sales: 12 },
-  { id: 'nft3', title: 'The Ethereum Explained', thumbnailUrl: 'https://picsum.photos/seed/articlenft1/400/300', category: 'Article', mintedDate: '2024-03-20', status: 'Not Listed', views: 300 },
-  { id: 'nft4', title: 'VR Sculpting Showcase', thumbnailUrl: 'https://picsum.photos/seed/videonft1/400/300', category: 'Video', mintedDate: '2024-02-10', status: 'Sold', views: 2500, sales: 1 },
-  { id: 'nft5', title: 'Pixel Warriors #001', thumbnailUrl: 'https://picsum.photos/seed/artnft2/400/300', category: 'Art', mintedDate: '2024-05-05', status: 'Auction', price: 0.8, currency: 'ETH', views: 800 },
+  {
+    id: 'nft1', title: 'Genesis Bloom', thumbnailUrl: 'https://picsum.photos/seed/genart1/400/300', category: 'Art', mintedDate: '2024-05-01', status: 'Listed', price: 1.5, currency: 'ETH', views: 1200, sales: 5,
+    imageUrl: '',
+    bidAmount: undefined,
+    creatorName: undefined,
+    lastBid: false
+  },
+  {
+    id: 'nft2', title: 'Decentralized Rhapsody', thumbnailUrl: 'https://picsum.photos/seed/musicnft1/400/300', category: 'Music', mintedDate: '2024-04-15', status: 'Listed', price: 0.5, currency: 'ETH', views: 500, sales: 12,
+    imageUrl: '',
+    bidAmount: undefined,
+    creatorName: undefined,
+    lastBid: false
+  },
+  {
+    id: 'nft3', title: 'The Ethereum Explained', thumbnailUrl: 'https://picsum.photos/seed/articlenft1/400/300', category: 'Article', mintedDate: '2024-03-20', status: 'Not Listed', views: 300,
+    imageUrl: '',
+    bidAmount: undefined,
+    creatorName: undefined,
+    lastBid: false
+  },
+  {
+    id: 'nft4', title: 'VR Sculpting Showcase', thumbnailUrl: 'https://picsum.photos/seed/videonft1/400/300', category: 'Video', mintedDate: '2024-02-10', status: 'Sold', views: 2500, sales: 1,
+    imageUrl: '',
+    bidAmount: undefined,
+    creatorName: undefined,
+    lastBid: false
+  },
+  {
+    id: 'nft5', title: 'Pixel Warriors #001', thumbnailUrl: 'https://picsum.photos/seed/artnft2/400/300', category: 'Art', mintedDate: '2024-05-05', status: 'Auction', price: 0.8, currency: 'ETH', views: 800,
+    imageUrl: '',
+    bidAmount: undefined,
+    creatorName: undefined,
+    lastBid: false
+  },
 ];
 
 const categories: (NftCategory | 'All')[] = ['All', 'Article', 'Music', 'Video', 'Art'];

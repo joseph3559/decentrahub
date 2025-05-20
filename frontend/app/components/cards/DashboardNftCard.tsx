@@ -1,17 +1,21 @@
-// /home/scott/Desktop/Office/decentrahub/frontend/app/components/cards/DashboardNftCard.tsx (Suggested path)
+// /home/scott/Desktop/Office/decentrahub/frontend/app/components/cards/DashboardNftCard.tsx
 'use client';
 
 import Image from 'next/image'; // Using Next/Image for optimization
 import { motion } from 'framer-motion';
-import { Button } from '../ui/button'; // Assuming ShadCN Button
+import { Button } from '../../components/ui/button'; // Assuming ShadCN Button from correct path
 import { Eye, Repeat, Tag, XCircle } from 'lucide-react'; // Example icons
-import { NftItem } from '../../../dashboard/consumer/MyMarketplace';
+import { MyCreation } from './MyCreationCard';
+
+// Corrected import path: Assuming NftItem is exported from the creator's "My NFT Activity" page
+// This path assumes DashboardNftCard.tsx is in app/components/cards/
+// and the creator's activity page is app/dashboard/creator/my-activity/page.tsx// Adjust if path or filename is different
 
 // Define specific actions based on tab
 type NftCardAction = 'view' | 'sell' | 'transfer' | 'update_listing' | 'cancel_listing' | 'update_bid' | 'cancel_bid' | 'unfavorite';
 
 interface DashboardNftCardProps {
-  item: NftItem; // You'll define this type in MyMarketplace.tsx or a shared types file
+  item: MyCreation;
   activeTab: 'purchases' | 'bids' | 'listings' | 'favorites';
   onAction?: (action: NftCardAction, itemId: string) => void;
 }
