@@ -211,6 +211,7 @@ export default function CreatorSettingsPage() {
                         initialData={profileData}
                         isEditMode={isEditMode}
                         onSave={handleProfileSave}
+                        isLoading={isSavingProfile}
                     />
                 ) : (
                     <p className="text-center text-[#a1a1aa]">Loading profile information...</p>

@@ -16,7 +16,7 @@ import {
 import { Input } from "../../../components/ui/input";
 import { Textarea } from "../../../components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../components/ui/avatar";
-import { Upload, User, Globe, Save } from 'lucide-react';
+import { Upload, User, Globe, Save, Loader2 } from 'lucide-react';
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "../../../components/ui/button";
@@ -37,14 +37,19 @@ const profileSchema = z.object({
 export type ProfileFormValues = z.infer<typeof profileSchema>;
 
 interface ProfileInformationFormProps {
-  initialData?: Partial<ProfileFormValues>;
+  initialData: Partial<ProfileFormValues>;
   isEditMode: boolean;
-  onSave: (data: ProfileFormValues) => Promise<boolean>; // Returns true on success
+  onSave: (data: ProfileFormValues) => Promise<boolean>;
+  isLoading?: boolean;
 }
 
-export const ProfileInformationForm = ({ initialData, isEditMode, onSave }: ProfileInformationFormProps) => {
+export const ProfileInformationForm = ({
+  initialData,
+  isEditMode,
+  onSave,
+  isLoading = false
+}: ProfileInformationFormProps) => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(initialData?.avatarUrl || null);
-  const [isSaving, setIsSaving] = useState(false);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -75,16 +80,12 @@ export const ProfileInformationForm = ({ initialData, isEditMode, onSave }: Prof
   };
 
   const onSubmit = async (data: ProfileFormValues) => {
-    setIsSaving(true);
-    // Include avatarPreview if it's a new upload and not yet in data.avatarUrl from a service
-    // This depends on how avatar upload is handled. For simplicity, assuming avatarUrl is updated.
     const success = await onSave(data);
     if (success) {
       toast.success("Profile updated successfully!");
     } else {
       toast.error("Failed to update profile. Please try again.");
     }
-    setIsSaving(false);
   };
 
   return (
@@ -107,7 +108,7 @@ export const ProfileInformationForm = ({ initialData, isEditMode, onSave }: Prof
                 accept="image/*"
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 onChange={handleAvatarChange}
-                disabled={!isEditMode || isSaving}
+                disabled={!isEditMode || isLoading}
               />
             </div>
           )}
@@ -120,7 +121,11 @@ export const ProfileInformationForm = ({ initialData, isEditMode, onSave }: Prof
             <FormItem>
               <FormLabel className="text-slate-300">Full Name</FormLabel>
               <FormControl>
-                <Input placeholder="Your full name" {...field} disabled={!isEditMode || isSaving} className="bg-[#1a1a2e] border-[#0f3460] placeholder:text-slate-500 focus:border-[#e94560]" />
+                <Input
+                  {...field}
+                  disabled={!isEditMode || isLoading}
+                  className="bg-[#1a1a2e] border-[#0f3460] placeholder:text-slate-500 focus:border-[#e94560]"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -133,7 +138,7 @@ export const ProfileInformationForm = ({ initialData, isEditMode, onSave }: Prof
             <FormItem>
               <FormLabel className="text-slate-300">Username</FormLabel>
               <FormControl>
-                <Input placeholder="Your unique username" {...field} disabled={!isEditMode || isSaving} className="bg-[#1a1a2e] border-[#0f3460] placeholder:text-slate-500 focus:border-[#e94560]" />
+                <Input placeholder="Your unique username" {...field} disabled={!isEditMode || isLoading} className="bg-[#1a1a2e] border-[#0f3460] placeholder:text-slate-500 focus:border-[#e94560]" />
               </FormControl>
               <FormDescription className="text-slate-500">This is your public display name. (e.g., Lens handle)</FormDescription>
               <FormMessage />
@@ -147,7 +152,7 @@ export const ProfileInformationForm = ({ initialData, isEditMode, onSave }: Prof
             <FormItem>
               <FormLabel className="text-slate-300">Bio</FormLabel>
               <FormControl>
-                <Textarea placeholder="Tell us a little about yourself" {...field} disabled={!isEditMode || isSaving} className="bg-[#1a1a2e] border-[#0f3460] placeholder:text-slate-500 min-h-[100px] focus:border-[#e94560]" />
+                <Textarea placeholder="Tell us a little about yourself" {...field} disabled={!isEditMode || isLoading} className="bg-[#1a1a2e] border-[#0f3460] placeholder:text-slate-500 min-h-[100px] focus:border-[#e94560]" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -160,7 +165,7 @@ export const ProfileInformationForm = ({ initialData, isEditMode, onSave }: Prof
             <FormItem>
               <FormLabel className="text-slate-300">Email (for notifications)</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="your.email@example.com" {...field} disabled={!isEditMode || isSaving} className="bg-[#1a1a2e] border-[#0f3460] placeholder:text-slate-500 focus:border-[#e94560]" />
+                <Input type="email" placeholder="your.email@example.com" {...field} disabled={!isEditMode || isLoading} className="bg-[#1a1a2e] border-[#0f3460] placeholder:text-slate-500 focus:border-[#e94560]" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -175,7 +180,7 @@ export const ProfileInformationForm = ({ initialData, isEditMode, onSave }: Prof
               <FormControl>
                 <div className="relative">
                   <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <Input type="url" placeholder="https://yourwebsite.com" {...field} disabled={!isEditMode || isSaving} className="pl-10 bg-[#1a1a2e] border-[#0f3460] placeholder:text-slate-500 focus:border-[#e94560]" />
+                  <Input type="url" placeholder="https://yourwebsite.com" {...field} disabled={!isEditMode || isLoading} className="pl-10 bg-[#1a1a2e] border-[#0f3460] placeholder:text-slate-500 focus:border-[#e94560]" />
                 </div>
               </FormControl>
               <FormMessage />
@@ -191,7 +196,7 @@ export const ProfileInformationForm = ({ initialData, isEditMode, onSave }: Prof
               <FormControl>
                  <div className="relative">
                   <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
-                  <Input type="url" placeholder="https://twitter.com/yourhandle" {...field} disabled={!isEditMode || isSaving} className="pl-10 bg-[#1a1a2e] border-[#0f3460] placeholder:text-slate-500 focus:border-[#e94560]" />
+                  <Input type="url" placeholder="https://twitter.com/yourhandle" {...field} disabled={!isEditMode || isLoading} className="pl-10 bg-[#1a1a2e] border-[#0f3460] placeholder:text-slate-500 focus:border-[#e94560]" />
                 </div>
               </FormControl>
               <FormMessage />
@@ -200,8 +205,19 @@ export const ProfileInformationForm = ({ initialData, isEditMode, onSave }: Prof
         />
 
         {isEditMode && (
-          <Button type="submit" disabled={isSaving} className="w-full sm:w-auto bg-[#e94560] hover:bg-[#d6304a] text-white">
-            {isSaving ? "Saving..." : <><Save className="mr-2 h-4 w-4" /> Save Profile</>}
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full sm:w-auto bg-[#e94560] hover:bg-[#d6304a] text-white"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <><Save className="mr-2 h-4 w-4" /> Save Profile</>
+            )}
           </Button>
         )}
       </form>
