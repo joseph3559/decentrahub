@@ -1,0 +1,53 @@
+.
+├── backend
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── src
+│   │   ├── app.ts
+│   │   ├── config
+│   │   ├── controllers
+│   │   ├── middlewares
+│   │   ├── models
+│   │   ├── routes
+│   │   ├── server.ts
+│   │   ├── services
+│   │   └── utils
+│   └── tsconfig.json
+├── frontend
+│   ├── app
+│   │   ├── auth
+│   │   ├── components
+│   │   ├── context
+│   │   ├── dashboard
+│   │   ├── hooks
+│   │   ├── layout.tsx
+│   │   ├── lib
+│   │   ├── marketplace
+│   │   ├── page.tsx
+│   │   ├── profile
+│   │   ├── providers.tsx
+│   │   ├── services
+│   │   ├── styles
+│   │   └── utils
+│   ├── components.json
+│   ├── eslint.config.mjs
+│   ├── next.config.ts
+│   ├── next-env.d.ts
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── postcss.config.mjs
+│   ├── public
+│   │   ├── file.svg
+│   │   ├── globe.svg
+│   │   ├── next.svg
+│   │   ├── vercel.svg
+│   │   └── window.svg
+│   ├── tailwind.config.js
+│   └── tsconfig.json
+├── project-structure.txt
+├── README.md
+└── shared
+    ├── constants.ts
+    └── types.ts
+
+24 directories, 26 files
