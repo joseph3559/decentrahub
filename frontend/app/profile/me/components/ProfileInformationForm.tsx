@@ -20,7 +20,6 @@ import { Upload, User, Globe, Save, Loader2 } from 'lucide-react';
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "../../../components/ui/button";
-import Image from 'next/image';
 
 const profileSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters.").max(50).optional(),
@@ -44,14 +43,6 @@ interface ProfileInformationFormProps {
   isLoading?: boolean;
 }
 
-interface NFTItem {
-  image: string;
-  title: string;
-  creator: string;
-  category: string;
-  imageWidth: number;
-  imageHeight: number;
-}
 
 export const ProfileInformationForm = ({
   initialData,
