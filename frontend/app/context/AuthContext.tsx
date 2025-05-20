@@ -14,7 +14,6 @@ import { RoleSelectionModal } from '../components/auth/RoleSelectionModal';
 import { toast } from "sonner";
 
 import {
-    type BackendUser,
     type BackendLensProfile,
     type VerifyWalletResponse,
     type VerifyWalletPayload
