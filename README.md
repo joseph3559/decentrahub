@@ -115,5 +115,47 @@ Follow these instructions to set up and run DecentraHub locally.
 ### 1. Clone the Repository
 
 ```bash
-git clone <YOUR_REPOSITORY_URL> # TODO: Replace with your actual repo URL
-cd decentrahub
+git clone https://github.com/yourusername/decentrahub.git
+cd decentrahub || exit
+
+echo "✅ Repository cloned and entered."
+
+# Create .env files
+echo "🔧 Creating .env files..."
+
+# Frontend .env.local
+mkdir -p frontend
+cat <<EOL > frontend/.env.local
+NEXT_PUBLIC_API_URL=http://localhost:4000/api
+NEXT_PUBLIC_LENS_ENVIRONMENT=development
+NEXT_PUBLIC_LENS_CHAIN_ID=137
+NEXT_PUBLIC_PINATA_GATEWAY=https://gateway.pinata.cloud/ipfs/
+EOL
+
+# Backend .env
+mkdir -p backend
+cat <<EOL > backend/.env
+PORT=4000
+DATABASE_URL=postgres://USER:PASSWORD@localhost:5432/decentrahub_db
+JWT_SECRET=your_super_secret_key
+PINATA_API_KEY=your_pinata_api_key
+PINATA_SECRET_API_KEY=your_pinata_secret
+EOL
+
+echo "✅ .env files created."
+
+# Install dependencies
+echo "📦 Installing frontend dependencies..."
+cd frontend && npm install && cd ..
+
+echo "📦 Installing backend dependencies..."
+cd backend && npm install && cd ..
+
+echo "✅ All dependencies installed."
+
+echo "🚀 Setup complete! Next steps:"
+echo "1. Edit your .env files to include real credentials."
+echo "2. Run migrations (if needed):"
+echo "   npx sequelize-cli db:create && npx sequelize-cli db:migrate"
+echo "3. Start the backend (cd backend && npm run dev)"
+echo "4. Start the frontend (cd frontend && npm run dev)"
