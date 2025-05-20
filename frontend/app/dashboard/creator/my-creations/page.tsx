@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 // Adjust path if needed
-import { PlusCircle, ListFilter, Search, Palette, BarChart3, CheckCircle } from 'lucide-react';
+import { PlusCircle, Search, Palette } from 'lucide-react';
 import { toast } from "sonner"; // For notifications
 import { MyCreation, MyCreationCard, NftCategory } from '../../../components/cards/MyCreationCard';
 import { useAuth } from '../../../context/AuthContext';

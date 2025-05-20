@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image'; // Using Next/Image for optimization
 import { motion } from 'framer-motion';
 import { Button } from '../ui/button'; // Assuming ShadCN Button
-import { MoreHorizontal, Eye, Repeat, Tag, XCircle, Send } from 'lucide-react'; // Example icons
+import { Eye, Repeat, Tag, XCircle } from 'lucide-react'; // Example icons
 import { NftItem } from '../../dashboard/consumer/MyMarketplace';
 
 // Define specific actions based on tab

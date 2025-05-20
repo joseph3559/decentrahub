@@ -2,6 +2,7 @@
 'use client';
 
 import { PackageOpen } from 'lucide-react';
+import Image from 'next/image';
 
 interface PreviewDisplayProps {
   mediaUrl?: string; // IPFS URL or local blob URL for preview
@@ -32,7 +33,7 @@ export const PreviewDisplay = ({
     }
 
     if (mediaType?.startsWith('image/')) {
-      return <img src={mediaUrl} alt={title || 'Media preview'} className="max-w-full max-h-64 object-contain rounded-md" />;
+      return <Image src={mediaUrl} alt={title || 'Media preview'} className="max-w-full max-h-64 object-contain rounded-md" />;
     }
     if (mediaType?.startsWith('video/')) {
       return <video src={mediaUrl} controls className="max-w-full max-h-64 rounded-md" />;

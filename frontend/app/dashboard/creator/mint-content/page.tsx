@@ -16,7 +16,6 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
 } from "../../../components/ui/dialog"; // For success dialog
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input"; // For displaying Tx hash to copy

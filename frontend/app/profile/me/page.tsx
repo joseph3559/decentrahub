@@ -22,7 +22,7 @@ import { updateUserProfile } from '../../services/user.service';
 
 export default function CreatorSettingsPage() {
   // currentUser from AuthContext is the source of truth for displayed data
-  const { currentUser, address, userRole, isLoadingAuth: isLoadingAuthContext } = useAuth();
+  const { currentUser, address, isLoadingAuth: isLoadingAuthContext } = useAuth();
   const [isEditMode, setIsEditMode] = useState(false);
 
   // profileData will be initialized from currentUser and used by the form

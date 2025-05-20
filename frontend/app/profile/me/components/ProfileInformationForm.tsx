@@ -16,7 +16,7 @@ import {
 import { Input } from "../../../components/ui/input";
 import { Textarea } from "../../../components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../components/ui/avatar";
-import { Upload, User, Mail, Link as LinkIcon, Globe, Save } from 'lucide-react';
+import { Upload, User, Globe, Save } from 'lucide-react';
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "../../../components/ui/button";

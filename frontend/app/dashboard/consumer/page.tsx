@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, ShoppingBag, Users, Heart, Layers, ShieldCheck } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Users, Layers, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useState } from 'react';
 import { Button } from '../../components/ui/button';

@@ -65,7 +65,7 @@ export const RoleSelectionModal = ({
             Welcome to DecentraHub!
           </DialogTitle>
           <DialogDescription className="text-center text-[#a1a1aa] pt-2 font-opensans">
-            You're connecting with: <strong className="text-purple-400 block truncate text-sm my-1">{walletAddress}</strong>
+            You are connecting with: <strong className="text-purple-400 block truncate text-sm my-1">{walletAddress}</strong>
             To complete your setup, please select your role and optionally provide some basic info.
           </DialogDescription>
         </DialogHeader>
@@ -85,7 +85,7 @@ export const RoleSelectionModal = ({
                 >
                     <Briefcase className="w-8 h-8 mb-1" />
                     <span className="text-md font-semibold font-montserrat">Creator</span>
-                    <span className="text-xs text-center opacity-80 font-opensans">Mint & Monetize</span>
+                    <span className="text-xs text-center opacity-80 font-opensans">Mint and Monetize</span>
                 </Button>
                 <Button
                     variant={selectedRole === 'consumer' ? 'default' : 'outline'}
@@ -98,7 +98,7 @@ export const RoleSelectionModal = ({
                 >
                     <User className="w-8 h-8 mb-1" />
                     <span className="text-md font-semibold font-montserrat">Consumer</span>
-                    <span className="text-xs text-center opacity-80 font-opensans">Discover & Collect</span>
+                    <span className="text-xs text-center opacity-80 font-opensans">Discover and Collect</span>
                 </Button>
                 </div>
             </div>

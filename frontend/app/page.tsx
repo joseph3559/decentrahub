@@ -10,10 +10,7 @@ import { ConnectKitButton } from 'connectkit'; // Remove useModal
 import {
   FaShieldAlt,
   FaUsers,
-  FaRocket,
-  FaCogs, // For "How it Works"
   FaPenFancy, // Mint
-  FaHandshake, // Engage
   FaMoneyBillWave, // Earn
   FaPalette, // Generic feature
   FaConnectdevelop, // Generic feature
@@ -28,7 +25,6 @@ import {
 } from 'react-icons/si';
 import { BsTwitterX, BsLinkedin, BsDiscord, BsGithub } from 'react-icons/bs';
 import { FiChevronRight } from 'react-icons/fi';
-import { useWallet } from './context/WalletContext';
 
 // Import Swiper styles (you might need to do this in a global CSS file or layout if issues persist)
 // import 'swiper/css';

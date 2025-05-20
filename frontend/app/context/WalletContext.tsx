@@ -20,7 +20,6 @@ import {
 import { fetchBalance } from '@wagmi/core';
 import { config as wagmiConfig } from '../providers';
 import { Chain } from 'wagmi/chains';
-import { ConnectKitButton } from 'connectkit';
 
 interface WalletBalance {
   value: bigint;

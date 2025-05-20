@@ -2,7 +2,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Edit3, Trash2, Eye, BarChart2, Tag } from 'lucide-react'; // Icons for actions
 import { Badge } from '../ui/badge';

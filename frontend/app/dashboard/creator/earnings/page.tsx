@@ -1,16 +1,16 @@
 // /home/scott/Desktop/Office/decentrahub/frontend/app/dashboard/creator/earnings/page.tsx
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
-import { Download, DollarSign, TrendingUp, Layers, Users, CalendarDays, AlertTriangle, BarChartHorizontalBig } from 'lucide-react';
+import { Download, DollarSign, TrendingUp, Layers, Users, CalendarDays, AlertTriangle } from 'lucide-react';
 import { toast } from "sonner";
 import { useAuth } from '../../../context/AuthContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../components/ui/select';
 import { Button } from '../../../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
 import { EmptyState } from '../../../components/EmptyState';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../components/ui/table';
 import EarningsChart from '../../../components/EarningsChart';

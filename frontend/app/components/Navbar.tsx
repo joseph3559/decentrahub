@@ -32,7 +32,7 @@ const Navbar = () => {
   const [mounted, setMounted] = useState(false);
 
   const { isAuthenticated, userRole } = useAuth(); // Get auth state
-  const { address, isConnected } = useWallet();    // Get wallet state from your context if needed, ConnectKitButton handles its own display
+  useWallet();    // Get wallet state from your context if needed, ConnectKitButton handles its own display
 
   const navLinks = [
     { href: '/', label: 'Home' },
